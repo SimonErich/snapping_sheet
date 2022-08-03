@@ -1,3 +1,7 @@
+import 'dart:developer';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:snapping_sheet/src/above_sheet_size_calculator.dart';
 import 'package:snapping_sheet/src/below_sheet_size_calculator.dart';
@@ -20,6 +24,11 @@ class SnappingSheet extends StatefulWidget {
   /// Needs to be of type
   /// [SnappingSheetContent] where a widget can be passed in.
   final SnappingSheetContent? sheetBelow;
+
+  /// The widget that will be used overlaying the child content.
+  /// It will only be visible when more than 30% of the sheet have been dragged
+  /// and fade in based on the current position of the sheet.
+  final Widget? backdrop;
 
   /// The grabbing widget that is used to indicate the the sheet can be dragged
   /// up and down.
@@ -98,6 +107,7 @@ class SnappingSheet extends StatefulWidget {
     Key? key,
     this.sheetAbove,
     this.sheetBelow,
+    this.backdrop,
     this.grabbing = const SizedBox(),
     this.grabbingHeight = 0,
     this.snappingPositions = const [
@@ -141,6 +151,7 @@ class SnappingSheet extends StatefulWidget {
     ],
     this.initialSnappingPosition,
     this.child,
+    this.backdrop,
     this.lockOverflowDrag = false,
     this.controller,
     this.onSheetMoved,
@@ -337,12 +348,34 @@ class _SnappingSheetState extends State<SnappingSheet>
     return LayoutBuilder(
       builder: (context, constraints) {
         _latestConstraints = constraints;
+        final snappingCalculator = _getSnappingCalculator();
+
+        final relativeSnappingPosition =
+            snappingCalculator.currentPosition / snappingCalculator.maxHeight;
+        final clampedRelativeSnappingPosition =
+            max(0, min(1, relativeSnappingPosition)).toDouble();
+
         return Container(
           constraints: BoxConstraints.expand(),
           child: Stack(
             children: [
               // The background of the snapping sheet
               if (widget.child != null) Positioned.fill(child: widget.child!),
+
+              // A backdrop color for the sheet
+              if (widget.backdrop != null)
+                Positioned.fill(
+                  bottom: 0,
+                  top: (clampedRelativeSnappingPosition > 0.3)
+                      ? 0
+                      : double.maxFinite,
+                  left: 0,
+                  right: 0,
+                  child: Opacity(
+                    opacity: clampedRelativeSnappingPosition,
+                    child: widget.backdrop,
+                  ),
+                ),
 
               // The grabber content
               buildGrabbingWidget(),
