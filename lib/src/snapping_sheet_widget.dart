@@ -217,7 +217,7 @@ class _SnappingSheetState extends State<SnappingSheet>
   @override
   void dispose() {
     _animationController.dispose();
-    getPositionInPixelsFuture.ingore();
+    getPositionInPixelsFuture?.ingore();
     super.dispose();
   }
 
