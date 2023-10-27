@@ -176,6 +176,8 @@ class _SnappingSheetState extends State<SnappingSheet>
   late AnimationController _animationController;
   Animation<double>? _snappingAnimation;
 
+  Future? getPositionInPixelsFuture;
+
   @override
   void initState() {
     super.initState();
