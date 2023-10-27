@@ -199,7 +199,8 @@ class _SnappingSheetState extends State<SnappingSheet>
       }
     });
 
-    Future.delayed(Duration(seconds: 0)).then((value) {
+    getPositionInPixelsFuture = 
+      Future.delayed(Duration(seconds: 0)).then((value) {
       setState(() {
         _currentPosition = _initSnappingPosition.getPositionInPixels(
           sheetSize,
@@ -216,6 +217,7 @@ class _SnappingSheetState extends State<SnappingSheet>
   @override
   void dispose() {
     _animationController.dispose();
+    getPositionInPixelsFuture.ingore();
     super.dispose();
   }
 
