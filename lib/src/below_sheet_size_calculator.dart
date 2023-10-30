@@ -34,7 +34,7 @@ class BelowSheetSizeCalculator extends SheetSizeCalculator {
       return Positioned(
         top: 0,
         bottom: 0,
-        right: getSheetEndPosition(),
+        right: getSheetEndPosition() - 2,
         left: getSheetStartPosition(),
         child: child,
       );
